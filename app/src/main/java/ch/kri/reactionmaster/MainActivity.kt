@@ -70,6 +70,10 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                     scoreboard_btn.visibility = View.VISIBLE
 
+                    val firebaseUser = FirebaseAuth.getInstance().currentUser
+                    val userID = firebaseUser!!.uid
+                    FirestoreService(applicationContext).SyncNumber(userID)
+
 
 
                 }
