@@ -31,11 +31,14 @@ class GameOver : AppCompatActivity() {
         val score = prefs.getInt("last_score", 0)
         val highscore = prefs.getInt("highscore", 0)
 
+        highscore_view.text = "Highscore: $highscore"
+
+
         if(highscore < score){
             prefs.edit().putInt("highscore", score).apply()
+            highscore_view.text = "Highscore: $score"
         }
 
-        highscore_view.text = "Highscore: $highscore"
 
         score_view.text = "Score: $score"
 

@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +32,26 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, Game::class.java)
             startActivity(intent)
         }
+
+        val googleAuthClient = GoogleAuthClient(applicationContext)
+        val loginButton = findViewById<Button>(R.id.Login_btn)
+
+
+
+        loginButton.setOnClickListener {
+            lifecycleScope.launch {
+                val signInSuccessful = googleAuthClient.signIn()
+                if (signInSuccessful == true){
+                    Toast.makeText(
+                        applicationContext,
+                        "Login successful",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+            }
+        }
+
     }
 
 }
