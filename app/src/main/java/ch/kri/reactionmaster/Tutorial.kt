@@ -17,6 +17,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlin.math.sqrt
 
+
+
+/*
+
+    Dieser Code Wurde mit chatgpt erstellt und minimal angepasst
+
+    query:
+    "make me a tutorial out of it insted of the score should be a explelation what to do and insted of the countdown it will display a short explelation on that u have limited time and it gets faster etc.
+    the user has unlimited time for evry action and the button turns green if he susceed the score displays well done and then the next action is shown till evrythin is done than the user gets redirectet back to the home page:
+    {Game.kt}
+
+ */
+
 class Tutorial : AppCompatActivity(), SensorEventListener {
 
     private lateinit var countdownView: TextView
