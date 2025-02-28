@@ -20,16 +20,19 @@ class FirestoreService(private val context: Context) {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    suspend fun SyncNumber(UID: String){
-        val existingQuery = firestore.collection("numbers")
-            .whereEqualTo("UID", UID)
+    suspend fun syncNumber(uid: String) {
+        val querySnapshot = firestore.collection("numbers")
+            .whereEqualTo("UID", uid)
             .limit(1)
             .get()
             .await()
 
-        if (existingQuery != null){
-            val prefs = context.getSharedPreferences("my_game_prefs", MODE_PRIVATE)
-            prefs.edit().putInt("highscore", existingQuery.first().get("number") as Int)
+        if (querySnapshot.documents.isNotEmpty()) {
+            val document = querySnapshot.documents.first()
+            val newHighScore = document.getLong("highscore")?.toInt() ?: 0
+
+            val prefs = context.getSharedPreferences("my_game_prefs", Context.MODE_PRIVATE)
+            prefs.edit().putInt("highscore", newHighScore).apply()
         }
     }
 

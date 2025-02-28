@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
                     val firebaseUser = FirebaseAuth.getInstance().currentUser
                     val userID = firebaseUser!!.uid
-                    FirestoreService(applicationContext).SyncNumber(userID)
+                    FirestoreService(applicationContext).syncNumber(userID)
 
 
 
