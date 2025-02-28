@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "391547989084",
+    "project_id": "reactionmaster-d38c0",
+    "storage_bucket": "reactionmaster-d38c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391547989084:android:d3a7c502fe64bfc0c40a99",
+        "android_client_info": {
+          "package_name": "ch.kri.reactionmaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "391547989084-2fdpqcdivmgap1v1qb2ier3sf58ro2h7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ch.kri.reactionmaster",
+            "certificate_hash": "958be7bd04e3e250b19157279dbcaedadb549bf7"
+          }
+        },
+        {
+          "client_id": "391547989084-3d4pgcb3u9jh1hb45tpg1e5em6posogm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOsTigBNgdyeF5AQAL-h7BzS-AxDyTqag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "391547989084-3d4pgcb3u9jh1hb45tpg1e5em6posogm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

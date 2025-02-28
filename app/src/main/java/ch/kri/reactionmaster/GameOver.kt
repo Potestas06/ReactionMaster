@@ -25,10 +25,21 @@ class GameOver : AppCompatActivity() {
         val retry_button = findViewById<Button>(R.id.retry_btn)
         val menuBtn = findViewById<Button>(R.id.return_btn)
         val score_view = findViewById<TextView>(R.id.score_view)
+        val highscore_view = findViewById<TextView>(R.id.highscore_view)
 
         val prefs = getSharedPreferences("my_game_prefs", MODE_PRIVATE)
         val score = prefs.getInt("last_score", 0)
+        val highscore = prefs.getInt("highscore", 0)
+
+        if(highscore < score){
+            prefs.edit().putInt("highscore", score).apply()
+        }
+
+        highscore_view.text = "Highscore: $highscore"
+
         score_view.text = "Score: $score"
+
+
 
 
 
