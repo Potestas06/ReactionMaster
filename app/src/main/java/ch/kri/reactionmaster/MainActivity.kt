@@ -33,10 +33,13 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         val firebaseUser = FirebaseAuth.getInstance().currentUser
-        if (firebaseUser == null) {
-            scoreboard_btn.visibility = View.INVISIBLE
+        val userID = firebaseUser!!.uid
+        lifecycleScope.launch {
+            val prefs = getSharedPreferences("my_game_prefs", MODE_PRIVATE)
+            val highscore = prefs.getInt("highscore", 0)
+            val username = firebaseUser.displayName ?: firebaseUser.email ?: "Unbekannt"
+            FirestoreService(applicationContext).CompareNumber(highscore, firebaseUser.uid,username )
         }
 
         scoreboard_btn.setOnClickListener{
@@ -54,9 +57,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val googleAuthClient = GoogleAuthClient(applicationContext)
         val loginButton = findViewById<Button>(R.id.Login_btn)
-
+        val googleAuthClient = GoogleAuthClient(applicationContext)
 
 
         loginButton.setOnClickListener {
@@ -69,13 +71,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     scoreboard_btn.visibility = View.VISIBLE
-
-                    val firebaseUser = FirebaseAuth.getInstance().currentUser
-                    val userID = firebaseUser!!.uid
-                    FirestoreService(applicationContext).syncNumber(userID)
-
-
-
+                    FirestoreService(applicationContext).syncNumberOnLogin(userID)
                 }
             }
         }

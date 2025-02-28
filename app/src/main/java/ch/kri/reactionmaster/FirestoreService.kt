@@ -20,7 +20,7 @@ class FirestoreService(private val context: Context) {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    suspend fun syncNumber(uid: String) {
+    suspend fun syncNumberOnLogin(uid: String) {
         val querySnapshot = firestore.collection("numbers")
             .whereEqualTo("UID", uid)
             .limit(1)
@@ -30,11 +30,33 @@ class FirestoreService(private val context: Context) {
         if (querySnapshot.documents.isNotEmpty()) {
             val document = querySnapshot.documents.first()
             val newHighScore = document.getLong("highscore")?.toInt() ?: 0
-
             val prefs = context.getSharedPreferences("my_game_prefs", Context.MODE_PRIVATE)
-            prefs.edit().putInt("highscore", newHighScore).apply()
+
+            if(newHighScore != 0){
+                prefs.edit().putInt("highscore", newHighScore).apply()
+            }
         }
     }
+
+    suspend fun CompareNumber(number: Int, UID: String, username: String) {
+        while (!isInternetAvailable()) {
+            delay(5000)
+        }
+
+        val existingQuery = firestore.collection("numbers")
+            .whereEqualTo("UID", UID)
+            .limit(1)
+            .get()
+            .await()
+
+        if(existingQuery.documents.isNotEmpty()){
+            val document = existingQuery.documents.first()
+            val DBHighScore = document.getLong("highscore")?.toInt()
+            if(DBHighScore != number){
+                storeNumber(username, number, UID)
+            }            }
+    }
+
 
     suspend fun storeNumber(username: String, number: Int, UID: String) {
         while (!isInternetAvailable()) {
