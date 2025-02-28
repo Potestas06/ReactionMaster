@@ -18,6 +18,9 @@
         android:theme="@style/Theme.ReactionMaster"
         tools:targetApi="31">
         <activity
+            android:name=".Tutorial"
+            android:exported="false" />
+        <activity
             android:name=".scoreboard"
             android:exported="false" />
 

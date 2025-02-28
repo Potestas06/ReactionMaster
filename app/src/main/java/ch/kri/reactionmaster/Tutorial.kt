@@ -7,7 +7,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.*
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -16,10 +15,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
-class Game : AppCompatActivity(), SensorEventListener {
+class Tutorial : AppCompatActivity(), SensorEventListener {
 
     private lateinit var countdownView: TextView
     private lateinit var scoreView: TextView
@@ -32,23 +30,24 @@ class Game : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
 
-    private var score = 0
     private var currentAction = 0
     private var actionInProgress = false
+    private var actionsCompleted = 0
+    private val MAX_ACTIONS = 6
 
-    private var lastX = 0f
-    private var lastY = 0f
-    private var lastZ = 0f
-
+    // Urspruengliche Zeiten, die zur Erhoehung der Schwierigkeit genutzt werden.
+    // Auch wenn der Spieler unbegrenzte Zeit hat, wird die Herausforderung sichtbar ansteigen.
     private var actionDuration = 3000L
     private var cooldownDuration = 1000L
 
     private val SHAKE_THRESHOLD = 2.3f
     private val MOVEMENT_FAIL_THRESHOLD = 1.4f
 
+    // MainTimer: Zeigt zu Beginn eine Erklaerung an, bevor die erste Aktion startet.
     private val mainTimer = object : CountDownTimer(4000, 1000) {
         override fun onTick(millisUntilFinished: Long) {
-            countdownView.text = (millisUntilFinished / 1000).toString()
+            countdownView.text =
+                "Achtung: Die Herausforderung wird schneller, aber du hast unbegrenzte Zeit!"
         }
         override fun onFinish() {
             countdownView.visibility = View.GONE
@@ -56,12 +55,13 @@ class Game : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    // Da der Spieler unbegrenzte Zeit hat, entfällt der Timer, der ein Scheitern ausloest.
     private var actionTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_game)
+        setContentView(R.layout.activity_tutorial)
 
         countdownView = findViewById(R.id.countdown_view)
         scoreView = findViewById(R.id.score)
@@ -73,6 +73,7 @@ class Game : AppCompatActivity(), SensorEventListener {
 
         pressButton.setOnClickListener { onButtonPressed(it) }
 
+        // Startet den Timer, der eine kurze Erklaerung anzeigt, bevor das Spiel beginnt
         mainTimer.start()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -98,20 +99,40 @@ class Game : AppCompatActivity(), SensorEventListener {
     }
 
     /**
-     * 1 = Lean Left
-     * 2 = Lean Right
-     * 3 = Lean Forward (Top)
-     * 4 = Lean Backward (Down)
-     * 5 = Press Button
-     * 6 = Shake
+     * Aktionen:
+     * 1 = Lehne dich nach links
+     * 2 = Lehne dich nach rechts
+     * 3 = Lehne dich nach vorne
+     * 4 = Lehne dich nach hinten
+     * 5 = Druecke den Button
+     * 6 = Schuettel das Telefon
      */
-    private fun pickAction(): Int = (1..6).random()
+    private var nextAction = 1
+    private fun pickAction(): Int {
+        val action = nextAction
+        nextAction = if (nextAction < 6) nextAction + 1 else 1
+        return action
+    }
+
 
     private fun startNextAction() {
         resetUI()
         currentAction = pickAction()
         actionInProgress = true
+        scoreView.bringToFront()
 
+        // Setze die entsprechende Anweisung in der scoreView
+        when (currentAction) {
+            1 -> scoreView.text = "Lehne dich nach links!"
+            2 -> scoreView.text = "Lehne dich nach rechts!"
+            3 -> scoreView.text = "Lehne dich nach vorne!"
+            4 -> scoreView.text = "Lehne dich nach hinten!"
+            5 -> scoreView.text = "Drücke den Button!"
+            6 -> scoreView.text = "Schüttel das Telefon!"
+        }
+        scoreView.visibility = View.VISIBLE
+
+        // Zeige die aktive Taste oder den Hinweis an
         when (currentAction) {
             1 -> showAndColor(leftButton)
             2 -> showAndColor(rightButton)
@@ -125,13 +146,7 @@ class Game : AppCompatActivity(), SensorEventListener {
                 countdownView.setTextColor(ContextCompat.getColor(this, android.R.color.black))
             }
         }
-
-        actionTimer = object : CountDownTimer(actionDuration, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-            override fun onFinish() {
-                if (actionInProgress) failAction()
-            }
-        }.start()
+        // Der actionTimer entfällt, da der Spieler unbegrenzte Zeit hat.
     }
 
     fun onButtonPressed(view: View) {
@@ -144,7 +159,7 @@ class Game : AppCompatActivity(), SensorEventListener {
     }
 
     /**
-     * Sensor data changes => check for movement or shake
+     * SensorAenderungen: Ueberpruefung, ob die richtige Bewegung ausgefuehrt wird.
      */
     override fun onSensorChanged(event: SensorEvent?) {
         if (!actionInProgress) return
@@ -156,47 +171,52 @@ class Game : AppCompatActivity(), SensorEventListener {
             val gX = x / SensorManager.GRAVITY_EARTH
             val gY = y / SensorManager.GRAVITY_EARTH
             val gZ = z / SensorManager.GRAVITY_EARTH
-            val gForce = sqrt(gX*gX + gY*gY + gZ*gZ)
+            val gForce = sqrt(gX * gX + gY * gY + gZ * gZ)
 
             when (currentAction) {
-                1 -> {
-                    if (x > 5) successAction()
-                }
+                1 -> if (x > 5) successAction()
                 2 -> if (x < -5) successAction()
                 3 -> if (y < -4) successAction()
                 4 -> if (y > 5) successAction()
-
                 6 -> {
                     if (gForce > SHAKE_THRESHOLD) {
                         successAction()
                     }
                 }
-
                 5 -> {
                     if (gForce > MOVEMENT_FAIL_THRESHOLD) {
                         failAction()
                     }
                 }
             }
-
-            lastX = x
-            lastY = y
-            lastZ = z
         }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // no-op
+        // keine Aktion noetig
     }
 
     private fun successAction() {
         actionInProgress = false
         actionTimer?.cancel()
-        incrementScore()
-        resetUI()
+        actionsCompleted++
 
+        // Zeige Erfolgsmeldung und markiere den aktiven Button gruen
+        scoreView.text = "Well done!"
+        markActiveButtonGreen()
+
+        // Erhoehe die Schwierigkeit
         increaseDifficulty()
 
+        // Bei Erreichen der MAX_ACTIONS wird zur Home-Seite umgeleitet
+        if (actionsCompleted >= MAX_ACTIONS) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                goToHomePage()
+            }, cooldownDuration)
+            return
+        }
+
+        // Nacheinander die naechste Aktion starten
         Handler(Looper.getMainLooper()).postDelayed({
             startNextAction()
         }, cooldownDuration)
@@ -215,12 +235,6 @@ class Game : AppCompatActivity(), SensorEventListener {
         }.start()
     }
 
-    private fun incrementScore() {
-        score++
-        scoreView.visibility = View.VISIBLE
-        scoreView.text = score.toString()
-    }
-
     private fun increaseDifficulty() {
         if (actionDuration > 1000) {
             actionDuration -= 200
@@ -231,25 +245,26 @@ class Game : AppCompatActivity(), SensorEventListener {
     }
 
     private fun showAndColor(button: Button) {
-        when (currentAction) {
-            1 -> showAndColorSucess(leftButton)
-            2 -> showAndColorSucess(rightButton)
-            3 -> showAndColorSucess(topButton)
-            4 -> showAndColorSucess(bottomButton)
-            5 -> showAndColorSucess(pressButton)
-            6 -> {
-                countdownView.visibility = View.VISIBLE
-                countdownView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
-            }
-        }
+        // Setze den Button sichtbar und mit Standardfarbe
         button.visibility = View.VISIBLE
-        val black = ContextCompat.getColor(this, android.R.color.black)
-        button.setBackgroundColor(black)
+        button.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
     }
 
-    private fun showAndColorSucess(button: Button){
-        val black = ContextCompat.getColor(this, android.R.color.holo_green_dark)
-        button.setBackgroundColor(black)
+    private fun markActiveButtonGreen() {
+        // Markiere den aktuell aktiven Button gruen
+        when (currentAction) {
+            1 -> showAndColorSuccess(leftButton)
+            2 -> showAndColorSuccess(rightButton)
+            3 -> showAndColorSuccess(topButton)
+            4 -> showAndColorSuccess(bottomButton)
+            5 -> showAndColorSuccess(pressButton)
+            // Bei der Shake-Aktion wird kein Button genutzt – hier koennte man den countdownView einfuegen.
+        }
+    }
+
+    private fun showAndColorSuccess(button: Button) {
+        val green = ContextCompat.getColor(this, android.R.color.holo_green_dark)
+        button.setBackgroundColor(green)
     }
 
     private fun resetUI() {
@@ -279,9 +294,13 @@ class Game : AppCompatActivity(), SensorEventListener {
     }
 
     private fun goToGameOver() {
-        saveScoreLocally(score)
+        saveScoreLocally(actionsCompleted)
         val intent = Intent(this, GameOver::class.java)
         startActivity(intent)
+        finish()
+    }
+
+    private fun goToHomePage() {
         finish()
     }
 
@@ -299,9 +318,7 @@ class Game : AppCompatActivity(), SensorEventListener {
             getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(
-                VibrationEffect.createOneShot(durationMs, 255)
-            )
+            vibrator.vibrate(VibrationEffect.createOneShot(durationMs, 255))
         } else {
             @Suppress("DEPRECATION")
             vibrator.vibrate(durationMs)

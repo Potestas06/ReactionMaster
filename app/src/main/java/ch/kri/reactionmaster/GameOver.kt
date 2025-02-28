@@ -25,6 +25,7 @@ class GameOver : AppCompatActivity() {
         val menuBtn = findViewById<Button>(R.id.return_btn)
         val scoreView = findViewById<TextView>(R.id.score_view)
         val highscoreView = findViewById<TextView>(R.id.highscore_view)
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
 
         val prefs = getSharedPreferences("my_game_prefs", MODE_PRIVATE)
         val score = prefs.getInt("last_score", 0)
@@ -36,11 +37,12 @@ class GameOver : AppCompatActivity() {
             prefs.edit().putInt("highscore", score).apply()
             highscoreView.text = "Highscore: $score"
 
-            val firebaseUser = FirebaseAuth.getInstance().currentUser
+
             if (firebaseUser != null) {
                 val username = firebaseUser.displayName ?: firebaseUser.email ?: "Unbekannt"
+                val userID = firebaseUser.uid
                 lifecycleScope.launch {
-                    FirestoreService(applicationContext).storeNumber(username, score)
+                    FirestoreService(applicationContext).storeNumber(username, score, userID)
                 }
             }
         } else {

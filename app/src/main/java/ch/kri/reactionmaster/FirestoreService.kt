@@ -3,6 +3,7 @@ package ch.kri.reactionmaster
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
@@ -19,13 +20,26 @@ class FirestoreService(private val context: Context) {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    suspend fun storeNumber(username: String, number: Int) {
+    suspend fun SyncNumber(UID: String){
+        val existingQuery = firestore.collection("numbers")
+            .whereEqualTo("UID", UID)
+            .limit(1)
+            .get()
+            .await()
+
+        if (existingQuery != null){
+            val prefs = context.getSharedPreferences("my_game_prefs", MODE_PRIVATE)
+            prefs.edit().putInt("highscore", existingQuery.first().get("number") as Int)
+        }
+    }
+
+    suspend fun storeNumber(username: String, number: Int, UID: String) {
         while (!isInternetAvailable()) {
             delay(5000)
         }
 
         val existingQuery = firestore.collection("numbers")
-            .whereEqualTo("username", username)
+            .whereEqualTo("UID", UID)
             .limit(1)
             .get()
             .await()
@@ -46,6 +60,7 @@ class FirestoreService(private val context: Context) {
 
         } else {
             val data = hashMapOf(
+                "UID" to UID,
                 "username" to username,
                 "number" to number,
                 "timestamp" to FieldValue.serverTimestamp()

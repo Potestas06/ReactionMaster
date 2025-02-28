@@ -1,10 +1,8 @@
 package ch.kri.reactionmaster
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -12,7 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,16 +23,29 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+
+
         val start_button = findViewById<Button>(R.id.Start)
         val scoreboard_btn = findViewById<Button>(R.id.Scoreboard_btn)
+        val tutorial_btn = findViewById<Button>(R.id.tutorial_btn)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        if (firebaseUser == null) {
+            scoreboard_btn.visibility = View.INVISIBLE
+        }
+
         scoreboard_btn.setOnClickListener{
             val intent = Intent(this, scoreboard::class.java)
+            startActivity(intent)
+        }
+
+        tutorial_btn.setOnClickListener{
+            val intent = Intent(this, Tutorial::class.java)
             startActivity(intent)
         }
 
@@ -53,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                         "Login successful",
                         Toast.LENGTH_SHORT
                     ).show()
+                    scoreboard_btn.visibility = View.VISIBLE
 
 
 
