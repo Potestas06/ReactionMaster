@@ -1,6 +1,7 @@
 package ch.kri.reactionmaster
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -67,6 +68,8 @@ class GoogleAuthClient(
                 println(tag + "name: ${tokenCredential.displayName}")
                 println(tag + "email: ${tokenCredential.id}")
                 println(tag + "image: ${tokenCredential.profilePictureUri}")
+
+
 
                 val authCredential = GoogleAuthProvider.getCredential(
                     tokenCredential.idToken, null
