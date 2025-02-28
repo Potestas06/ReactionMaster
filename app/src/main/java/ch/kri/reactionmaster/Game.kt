@@ -163,7 +163,7 @@ class Game : AppCompatActivity(), SensorEventListener {
                     if (x > 5) successAction()
                 }
                 2 -> if (x < -5) successAction()
-                3 -> if (y < -5) successAction()
+                3 -> if (y < -4) successAction()
                 4 -> if (y > 5) successAction()
 
                 6 -> {

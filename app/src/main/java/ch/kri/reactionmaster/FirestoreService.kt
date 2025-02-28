@@ -12,7 +12,6 @@ class FirestoreService(private val context: Context) {
 
     private val firestore = FirebaseFirestore.getInstance()
 
-    // Prüft, ob eine Internetverbindung vorhanden ist
     private fun isInternetAvailable(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
@@ -20,21 +19,41 @@ class FirestoreService(private val context: Context) {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    // Speichert den Benutzernamen und die Zahl in Firestore,
-    // wartet so lange, bis eine Internetverbindung besteht
     suspend fun storeNumber(username: String, number: Int) {
         while (!isInternetAvailable()) {
-            delay(5000) // 5 Sekunden warten, bevor erneut geprüft wird
+            delay(5000)
         }
 
-        val data = hashMapOf(
-            "username" to username,
-            "number" to number,
-            "timestamp" to FieldValue.serverTimestamp()
-        )
-
-        firestore.collection("numbers")
-            .add(data)
+        val existingQuery = firestore.collection("numbers")
+            .whereEqualTo("username", username)
+            .limit(1)
+            .get()
             .await()
+
+        if (existingQuery.documents.isNotEmpty()) {
+            val docSnapshot = existingQuery.documents[0]
+            val docId = docSnapshot.id
+
+            firestore.collection("numbers")
+                .document(docId)
+                .update(
+                    mapOf(
+                        "number" to number,
+                        "timestamp" to FieldValue.serverTimestamp()
+                    )
+                )
+                .await()
+
+        } else {
+            val data = hashMapOf(
+                "username" to username,
+                "number" to number,
+                "timestamp" to FieldValue.serverTimestamp()
+            )
+
+            firestore.collection("numbers")
+                .add(data)
+                .await()
+        }
     }
 }
