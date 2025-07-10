@@ -1,45 +1,36 @@
 # ReactionMaster
 ![image](https://github.com/user-attachments/assets/98e1b274-1889-49a9-89a9-b39788117572)
 
-Eine Spiel mit der man die Reactionszeit messen, vergleichen und verbessern kann
+A game for measuring, comparing and improving reaction time.
 
+## Reflections
 
-## Reflexion
+### Objective
+The goal was an app where you can playfully improve, measure and compare your reaction time. It should have a start screen with login, a “Start” button and a “Scoreboard” button (the scoreboard only appears when logged in). During the game, black bars appear on the side, and when you tilt the smartphone in that direction you earn a point. There should also be a few other elements: when the phone vibrates, you have to shake it; when a button appears, you have to press it. The difficulty increases continuously until you can no longer keep up, and as soon as you fail to react within the required time window you are taken to a Game-Over screen showing your score and high score. If you’re logged in, the score is saved to Firestore so you can view it on the scoreboard. If you have no internet connection, the service waits until you’re back online and then saves the score. Back on the menu: when you log in with Google, the “Scoreboard” button appears. At the top you see your own avatar, and below are the Top 10 players with their respective scores.
 
-### Ziel:
-Das Ziel war eine App, bei der man die Reaction-Zeit spielerisch verbessern, messen und vergleichen kann. Es sollte einen Startbildschirm haben mit Login, Startknopf und einem Scoreboard-Knopf (Scoreboard nur, wenn eingeloggt). Beim Spiel sollten auf der Seite schwarze Balken erscheinen, und wenn man das Smartphone in die Richtung neigt, gibt es einen Punkt. Es sollte auch ein paar weitere Elemente geben, wie wenn das Smartphone vibriert, soll man es schütteln, oder wenn ein Knopf erscheint, muss man ihn drücken. Die Schwierigkeit bestand darin, dass es immer schneller wird, bis man es nicht mehr schafft, und sobald man es nicht mehr in der richtigen Zeitspanne schafft, wird man zu einem Game-Over-Screen weitergeleitet, wo einem der Highscore und der Score angezeigt werden. Falls man eingeloggt ist, wird der Score in Firestore gespeichert, sodass man ihn im Scoreboard betrachten kann. Wenn man allerdings kein Internet hat, wird der Service so lange warten, bis man wieder mit dem Internet verbunden ist und dann den Score speichern. Zurück zum Menü: Dort, wenn man sich per Google einloggt, soll der Knopf Scoreboard erscheinen. Ganz oben sieht man sich selbst, und darunter sind die Top 10 besten Spieler mit ihrem jeweiligen Score.
+### Result / What’s Still Missing?
+The result is very close to the goal; in fact it has more, because during development I decided to add a tutorial to improve the user experience. The only thing that still bothers me is that there is a login but no logout—you’re stuck in the app. To compensate, I added synchronization of the high score from Firestore (if available) upon login.
 
-### Resultat/was fehlt noch?:
-Das Resultat ist sehr nahe am Ziel; es hat sogar mehr, da ich mich während der Entwicklung entschieden habe, ein Tutorial hinzuzufügen, um die Nutzererfahrung zu verbessern. Das Einzige, was mich aktuell noch stört, ist, dass es nur ein Login, aber kein Logout gibt – man ist also in der App gefangen. Dafür habe ich hinzugefügt, dass, wenn man sich einloggt, der Highscore von Firestore (sofern verfügbar) synchronisiert wird.
+### Personal Conclusion & How It Went
+The project was one huge struggle. Originally I wanted to do it in Flutter since it was completely new to me. I even built a prototype with working logic, but unfortunately Flutter didn’t meet my requirement of a 50 ms reaction time; so I had to switch to Kotlin. At first everything went great with Kotlin; I was able to make rapid progress, but then came the Firebase integration, which completely threw me off. I spent over four hours just on the login, because the “automatic” integration wouldn’t work for me. I didn’t understand it for a long time until I found this tutorial, which helped me get Firebase up and running:  
+https://www.youtube.com/watch?v=WFTsyOKMUKU
 
-### Persönliches Fazit + wie lief es:
-Das Projekt war ein einziger riesiger Krampf. Ursprünglich wollte ich es in Flutter machen, da es mir eine komplett unbekannte Sprache war. Ich habe auch einen Prototypen, bei dem die Logik schon funktioniert hat, gemacht, doch leider hat Flutter nicht meine Anforderung erfüllt, dass die Reaction in 50 ms erfolgen soll; daher musste ich zu Kotlin wechseln. Anfangs lief alles super mit Kotlin; ich konnte sehr schnell Fortschritte erzielen, doch dann kam die Firebase-Integration, die mich komplett auseinander genommen hat. Ich war total über 4 Stunden nur mit dem Login beschäftigt, da die "automatische" Integration bei mir nicht funktionierte. Ich habe das lange nicht begriffen, bis ich dieses Tutorial gefunden habe https://www.youtube.com/watch?v=WFTsyOKMUKU&t=1050s, das mir dabei geholfen hat, Firebase zum Laufen zu bringen. Insgesamt bin ich mit meiner ersten Android-App zufrieden, da ich alle meine Anforderungen erfüllen konnte und in den 2 Wochen Kotlin lernen musste (ich habe allgemein schon fast keine Erfahrung mit Java, aber Kotlin war da auf einem anderen Level). Total kann man sagen, es hat Spass gemacht, aber die schlaflosen Nächte, in denen ich an der App gearbeitet habe, um die Deadline einzuhalten, haben dazu geführt, dass ich 2 neue Programmiersprachen (Kotlin + Dart) gelernt habe und auch, wie man eine App an sich entwickelt sowie Firebase integriert.
-Wenn ich etwas anderes machen könnte, würde ich mir ein weniger komplexes Projekt suchen und dafür mehr Zeit in die Planung und Schlaf investieren. Mein Hauptproblem bei der Planung war, dass ich einseitig Flutter im Hinterkopf hatte und gleichzeitig nicht wirklich wusste, wie man eine so grosse App wirklich macht, da ich nicht wirklich Erfahrung mit Mobile-Apps hatte.
+Overall I’m satisfied with my first Android app, since I was able to meet all my requirements and learn Kotlin in just two weeks (I had almost no Java experience, and Kotlin was on another level). All in all, it was fun, but the sleepless nights working on the app to meet the deadline taught me two new programming languages (Kotlin + Dart) and how to develop an app and integrate Firebase. If I could do it again, I’d choose a less complex project so I could spend more time planning and sleeping. My main planning issue was that I had Flutter in mind from the start, and at the same time I didn’t really know how to build such a large app because I had no real experience with mobile apps.
 
+| Test Case ID | Description                                    | Preconditions   | Step-by-Step Procedure                     | Expected Result                                                  | Result |
+| ------------ | ---------------------------------------------- | --------------- | ------------------------------------------ | ---------------------------------------------------------------- | ------ |
+| TF-001       | Start game by clicking “Start”                 | App is installed| 1. Open app  2. Click “Start”              | Game starts and countdown begins                                 | ✅     |
+| TF-002       | Tilt smartphone to the left                    | Game is running | 1. Tilt smartphone to the left             | System correctly detects the movement                            | ✅     |
+| TF-003       | Tilt smartphone to the right                   | Game is running | 1. Tilt smartphone to the right            | System correctly detects the movement                            | ✅     |
+| TF-004       | Tilt smartphone forward                        | Game is running | 1. Tilt smartphone forward                 | System correctly detects the movement                            | ✅     |
+| TF-005       | Tilt smartphone backward                       | Game is running | 1. Tilt smartphone backward                | System correctly detects the movement                            | ✅     |
+| TF-006       | Shake the smartphone                           | Game is running | 1. Shake the smartphone                    | System correctly detects the movement                            | ✅     |
+| TF-007       | Shake when the phone vibrates                  | Game is running and vibrating | 1. Wait for vibration  2. Shake the phone | Action validated within 50 ms                                     | ✅     |
+| TF-008       | High score syncs after successful login        | Logged in       | 1. Log in  2. Play game  3. Check high score | High score appears in the online scoreboard                       | ✅     |
+| TF-009       | Press the login button                         | App open        | 1. Press login button  2. Complete Google login | Successful login                                               | ✅     |
 
-| Testfall-ID | Testfallbeschreibung | Vorbedingungen | Schritt für Schritt Vorgehen | Erwartetes Ergebnis | Resultat  |
-| ----------- | -------------------- | -------------- | --------------------------- | -------------------- |--------------------|
-| TF-001 | Spiel starten durch Klick auf „Start“ | App ist installiert | 1. App öffnen 2. Start-Button klicken | Das Spiel beginnt, und der Countdown beginnt zu zählen | ✅ |
-| TF-002 | Neigen des Smartphones nach links | Spiel läuft | 1. Smartphone nach links neigen | Das System erkennt die Bewegung korrekt. | ✅ |
-| TF-003 | Neigen des Smartphones nach rechts | Spiel läuft | 1. Smartphone nach rechts neigen | Das System erkennt die Bewegung korrekt. | ✅ |
-| TF-004 | Neigen des Smartphones nach vorne | Spiel läuft | 1. Smartphone nach vorne neigen | Das System erkennt die Bewegung korrekt. |✅  |
-| TF-005 | Neigen des Smartphones nach hinten | Spiel läuft | 1. Smartphone nach hinten neigen | Das System erkennt die Bewegung korrekt. |✅  |
-| TF-006 | Schütteln des Smartphones | Spiel läuft | 1. Smartphone schütteln | Das System erkennt die Bewegung korrekt. | ✅ |
-| TF-007 | Schütteln des Smartphones bei Vibration | Spiel läuft und vibriert | 1. Auf Vibration warten 2. Smartphone schütteln | Die Aktion wird innerhalb von 50 ms validiert. | ✅ |
-| TF-008 | Highscore wird nach erfolgreichem Login synchronisiert | Login erfolgreich | 1. Einloggen 2. Spiel spielen 3. Highscore prüfen | Highscore erscheint im Online-Scoreboard. | ✅ |
-| TF-009 | Drücken auf den Login-Button | App geöffnet | 1. Login-Button drücken 2. Google Login | Du kannst dich erfolgreich einloggen. | ✅ |
-
-
-| Testfall-ID | Testfallbeschreibung | Vorbedingungen | Schritt für Schritt Vorgehen | Erwartetes Ergebnis | Resultat  |
-| ----------- | ------------------- | -------------- | --------------------------- | -------------------- |--------------------|
-| NF-001 | Sensordatenverarbeitung in Echtzeit | Spiel läuft | 1. Bewegung ausführen 2. Reaktionszeit messen | Feedback erfolgt in mindestens 95 % der Fälle innerhalb von 50 ms. |✅  |
-| NF-002 | Offline-Modus testen | App ist im Offline-Modus | 1. Spiel starten 3. neuer Highscore im Spiel ereichen 4. app schliessen 5. app öffnen 6. scoreboard drücken 7. score validieren | App bleibt voll funktionsfähig, Highscore wird lokal gespeichert. | ✅ |
-| NF-003 | Usability-Test mit Testpersonen | Testpersonen nutzen die App | 1. Testpersonen führen verschiedene Aktionen aus 2. Feedback sammeln | Mindestens 90 % der Tester bewerten die App als intuitiv. | ✅(testpersonen bürgis,Mugli) |
-
-
-
-
-
-
-  ## linter:
-  ./gradlew lint
+| Test Case ID | Description                                    | Preconditions       | Step-by-Step Procedure                              | Expected Result                                                                 | Result |
+| ------------ | ---------------------------------------------- | ------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------- | ------ |
+| NF-001       | Real-time sensor data processing               | Game is running     | 1. Perform movement  2. Measure reaction time       | Feedback in at least 95 % of cases within 50 ms                                 | ✅     |
+| NF-002       | Offline mode                                   | App is offline      | 1. Start game  2. Achieve new high score  3. Close and reopen app  4. Open scoreboard  5. Validate score | App remains fully functional; high score stored locally                  | ✅     |
+| NF-003       | Usability test with users                      | Test users available| 1. Users perform various actions  2. Collect feedback | At least 90 % of testers rate the app as intuitive (testers: Bürgis, Mugli)    | ✅     |
